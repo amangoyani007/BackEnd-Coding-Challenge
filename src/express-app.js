@@ -5,6 +5,7 @@ const { SENTRY_URL } = require("./config");
 const {
   product,
   user,
+  cart
 
 } = require("./api");
 module.exports = async (app) => {
@@ -15,5 +16,6 @@ module.exports = async (app) => {
 
   product(app);
   user(app);
+  cart(app);
 
 };

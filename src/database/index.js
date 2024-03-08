@@ -5,5 +5,6 @@ module.exports = {
   
   ProductRepository: require('./repository/product-repository.js'),
   UserRepository: require('./repository/user-repository.js'),
+  CartRepository: require('./repository/cart-repository.js'),
 
 }
