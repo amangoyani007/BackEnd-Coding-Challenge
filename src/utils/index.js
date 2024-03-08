@@ -56,3 +56,26 @@ module.exports.GetApiResponse = async (
     return error;
   }
 };
+
+module.exports.ResponseMessage = (message_type) => {
+  try {
+    const messages = {
+      datafound: "Data Found",
+      datainsert: "Data Inserted",
+      dataupdate: "Data Updated",
+      dataexist: "Data Exist",
+      nodatafound: "No Data Found",
+      requirederror: "Please Fill all Required Field",
+      nodataupdate: "No Data Updated",
+      nodatainsert: "Data not Inserted Successfuly",
+      datapresent: "Already present in database",
+      error: "Something went wrong",
+      success: "Data found",
+      datadeleted: "Data deleted sucessfully",
+      nodatadeleted: "Delete Opration failed"
+    };
+    return messages[message_type];
+  } catch (error) {
+    return error;
+  }
+};
