@@ -1,3 +1,10 @@
+const jwt = require("jsonwebtoken");
+const {
+  APP_SECRET_SUPER_USER,
+  APP_SECRET
+} = require("../config");
+
+
 // Function for Formate at service level
 module.exports.FormateData = async (data, successmsg = '', errormsg = '', custmsg = '', limit) => {
   let res = {};
@@ -75,6 +82,86 @@ module.exports.ResponseMessage = (message_type) => {
       nodatadeleted: "Delete Opration failed"
     };
     return messages[message_type];
+  } catch (error) {
+    return error;
+  }
+};
+
+// Token Validation for User
+module.exports.ValidateSignature = async (req) => {
+  try {
+    const signature = req.get("Authorization");
+    var payload = jwt.verify(signature.split(" ")[1], APP_SECRET);
+    req.user = payload;
+    return true;
+  } catch (error) {
+
+    try {
+      const signature = req.get("Authorization");
+      var payload = jwt.verify(signature.split(" ")[1], APP_SECRET_SUPER_USER);
+      return true;
+
+    } catch (error) {
+
+      return false;
+    }
+  }
+};
+
+// Token Validation for Admin
+module.exports.ValidateSignatureOVsuperUser = async (req) => {
+  try {
+    const signature = req.get("Authorization");
+    const payload = await jwt.verify(signature.split(" ")[1], APP_SECRET_SUPER_USER);
+    req.user = payload;
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
+
+// JWT Token Create
+module.exports.GenerateSignature = async (payload, adminkey) => {
+  try {
+    if (adminkey == 1) {
+      return await jwt.sign(payload, APP_SECRET_SUPER_USER, { expiresIn: "30d" });
+    }
+    return await jwt.sign(payload, APP_SECRET, { expiresIn: "30d" });
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+};
+
+module.exports.GetPagination = async (page, size) => {
+  if (page == undefined || page == "") {
+    page = 1;
+  } else {
+    page = parseInt(page);
+  }
+  if (size == undefined || size == "") {
+    size = 25;
+  } else {
+    size = parseInt(size);
+  }
+  skip = size * (page - 1);
+  limit = size;
+  return { limit, skip };
+};
+
+module.exports.GetSortByFromRequest = async (orderbycolumnname, orderby) => {
+  try {
+    if (orderbycolumnname != undefined && orderby != undefined && orderbycolumnname != "" && orderby != "") {
+      var columnname = orderbycolumnname;
+      var orderby = orderby;
+      sortarray = {
+        [columnname]: +orderby,
+      };
+    } else {
+      orderbycolumnname = "createdAt";
+      orderby = -1;
+    }
+    return { orderbycolumnname, orderby };
   } catch (error) {
     return error;
   }

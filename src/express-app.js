@@ -4,6 +4,7 @@ const cors = require("cors");
 const { SENTRY_URL } = require("./config");
 const {
   product,
+  user,
 
 } = require("./api");
 module.exports = async (app) => {
@@ -13,5 +14,6 @@ module.exports = async (app) => {
   app.use(express.static(__dirname + "/public"));
 
   product(app);
+  user(app);
 
 };
