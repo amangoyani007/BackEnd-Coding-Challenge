@@ -26,7 +26,11 @@ const CreateUserValidator = [
 
   body("address")
     .notEmpty()
-    .withMessage("Please Provide Address")
+    .withMessage("Please Provide Address"),
+
+  body("is_admin")
+    .notEmpty()
+    .withMessage("Please Provide Admin Status"),
 
 ];
 

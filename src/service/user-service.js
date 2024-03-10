@@ -87,11 +87,61 @@ class UserService {
 
   }
 
+  // Add Sorting, Pagination and Serching in User List
   async GetAllData() {
 
     try {
 
+      let { search, startdate, enddate, sortby, sortorder, nextpage, perpage } = userInputs;
+      if (!search) { search = '' }
+      var searchex = new RegExp(search.replace(/\+/g, ''), 'i');
+      var { skip, limit } = await utils.GetPagination(nextpage, perpage);
+      var { orderbycolumnname, orderby } = await utils.GetSortByFromRequest(sortby, +sortorder);
+      var dateflt = [], fltand = [], fltsearch = [];
+      fltand.push({ is_delete: { $ne: 1 } });
+
+      if (startdate != undefined && enddate != undefined) {
+        dateflt = { fltdate: { $gte: startdate, $lte: enddate }, };
+      } else if (startdate != undefined) {
+        dateflt = { fltdate: { $eq: startdate } };
+      } else if (enddate != undefined) {
+        dateflt = { fltdate: { $eq: enddate } };
+      }
+      if (searchex.length != 0) {
+        fltsearch = {
+          $or: [
+            { username: searchex },
+            { email: searchex },
+            { mobile: searchex },
+            { order_history: searchex },
+            { note: searchex },
+          ]
+        }
+        fltand.push(fltsearch);
+      }
+      if (dateflt.length != 0) {
+        fltand.push(dateflt);
+      }
+
       const pipeline = [
+        {
+          $sort: {
+            sortby: +sortorder,
+          },
+        },
+        {
+          $addFields: {
+            fltdate: {
+              $dateToString: {
+                format: "%Y-%m-%d",
+                date: "$createdAt",
+                timezone: "Asia/Kolkata",
+              },
+            },
+          },
+        },
+        { $match: { $and: fltand }, },
+        { $sort: { [orderbycolumnname]: orderby } },
         {
           $project: {
             _id: 0,
@@ -108,6 +158,8 @@ class UserService {
             lastupdate: "$updatedAt"
           },
         },
+        { $skip: skip },
+        { $limit: limit },
       ];
 
       const find = await this.repository.GetPipelineData(pipeline);

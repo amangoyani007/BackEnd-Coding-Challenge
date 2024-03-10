@@ -53,31 +53,6 @@ module.exports = (app) => {
   });
 
   // Product Update
-  app.post("/productremovetour", UpdateProductValidator, async (req, res, next) => {
-    const errors = validationResult(req);
-
-    try {
-
-      if (!errors.isEmpty()) {
-        apiresponse.message = await utils.ResponseMessage("requirederror");
-        apiresponse.data = errors.array();
-        apiresponse.statuscode = 400
-        console.log(errors);
-      }
-      else {
-        apiresponse = await service.RemoveTour(req.body);
-        console.log(apiresponse);
-      }
-      var response = await utils.GetApiResponse(apiresponse);
-      return res.status(apiresponse.statuscode).json(response);
-
-    } catch (err) {
-      console.log(err);
-      res.json(err)
-      next(err);
-    }
-  });
-
   app.put("/productupdate", async (req, res, next) => {
     const errors = validationResult(req);
 

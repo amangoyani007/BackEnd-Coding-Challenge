@@ -80,6 +80,7 @@ class ProductService {
 
   }
 
+  // Add Sorting, Pagination and Serching in Product List
   async GetAllData(userInputs) {
 
     try {
