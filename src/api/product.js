@@ -40,9 +40,12 @@ module.exports = (app) => {
     try {
 
       apiresponse = await service.GetAllData(req.body);
+      lodemore = apiresponse.data.lodemore
       // console.log(apiresponse);
 
       var response = await utils.GetApiResponse(apiresponse);
+      response.lodemore = lodemore;
+
       return res.status(apiresponse.statuscode).json(response);
 
     } catch (err) {

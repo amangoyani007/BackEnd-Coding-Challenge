@@ -85,6 +85,8 @@ class CartService {
     try {
 
       let { search, startdate, enddate, sortby, sortorder, nextpage, perpage } = userInputs;
+      var lodemore = 1
+
       if (!search) { search = '' }
       var searchex = new RegExp(search.replace(/\+/g, ''), 'i');
       var { skip, limit } = await utils.GetPagination(nextpage, perpage);
@@ -151,6 +153,11 @@ class CartService {
       const find = await this.repository.GetPipelineData(pipeline);
 
       if (find) {
+        if (find.length < limit) {
+          lodemore = 0
+        }
+        find.lodemore = lodemore;
+
         var successmsg = await utils.ResponseMessage("datafound");
         var errormsg = await utils.ResponseMessage("nodatafound");
         var apires = await utils.FormateData(find, successmsg, errormsg);
