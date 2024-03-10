@@ -88,12 +88,14 @@ class UserService {
   }
 
   // Add Sorting, Pagination and Serching in User List
-  async GetAllData() {
+  async GetAllData(userInputs) {
 
     try {
 
       let { search, startdate, enddate, sortby, sortorder, nextpage, perpage } = userInputs;
-      var lodemore = 1
+      var lodemore = -1
+
+      sortorder = sortorder ?? 1;
 
       if (!search) { search = '' }
       var searchex = new RegExp(search.replace(/\+/g, ''), 'i');

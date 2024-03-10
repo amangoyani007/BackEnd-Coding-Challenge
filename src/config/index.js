@@ -14,4 +14,6 @@ if (process.env.NODE_ENV !== "prod") {
 module.exports = {
   PORT: process.env.PORT,
   DB_URL: process.env.DB_URL,
+  APP_SECRET: process.env.APP_SECRET,
+  APP_SECRET_SUPER_USER: process.env.APP_SECRET+'admin',
 };

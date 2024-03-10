@@ -1,14 +1,15 @@
 const { validationResult } = require("express-validator");
-const { CreateProductValidator, UpdateProductValidator } = require("../route/product-validator");
+const { CreateProductValidator, UpdateProductValidator, List } = require("../route/product-validator");
 const ProductService = require("../service/product-services");
 const utils = require('../utils')
+const { UserAuth } = require('./middlewares/auth.js');
 
 module.exports = (app) => {
   const service = new ProductService();
   let apiresponse = { statuscode: 400, message: "Bad Request", data: [], apistatus: false };
 
   // Product Create
-  app.post("/productcreate", CreateProductValidator, async (req, res, next) => {
+  app.post("/productcreate", UserAuth, CreateProductValidator, async (req, res, next) => {
     const errors = validationResult(req);
 
     try {
@@ -34,17 +35,28 @@ module.exports = (app) => {
   });
 
   // Product List
-  app.get("/product", async (req, res, next) => {
+  app.get("/product", UserAuth, List, async (req, res, next) => {
     const errors = validationResult(req);
+    var lodemore = 0
 
     try {
+      if (!errors.isEmpty()) {
+        apiresponse.message = await utils.ResponseMessage("requirederror");
+        apiresponse.data = errors.array();
+        apiresponse.statuscode = 400
+        console.log(errors);
+      }
+      else {
+        const apires = await service.GetAllData(req.body);
+        lodemore = apires.data.lodemore
 
-      apiresponse = await service.GetAllData(req.body);
-      lodemore = apiresponse.data.lodemore
-      // console.log(apiresponse);
+        apiresponse.data = apires.data
+        apiresponse.message = apires.message;
+        apiresponse.apistatus = apires.apistatus;
+        statuscode = apires.statuscode;
+      }
 
       var response = await utils.GetApiResponse(apiresponse);
-      response.lodemore = lodemore;
 
       return res.status(apiresponse.statuscode).json(response);
 
@@ -56,7 +68,7 @@ module.exports = (app) => {
   });
 
   // Product Update
-  app.put("/productupdate", async (req, res, next) => {
+  app.put("/productupdate", UserAuth, async (req, res, next) => {
     const errors = validationResult(req);
 
     try {
