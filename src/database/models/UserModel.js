@@ -9,7 +9,8 @@ const UserModel = new Schema(
     mobile: { type: String },
     address: { type: String },
     order_history: { type: Number },
-    note: { type: String }
+    note: { type: String },
+    is_admin: { type: Number }
 
   },
   {

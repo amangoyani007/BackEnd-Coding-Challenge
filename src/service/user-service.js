@@ -93,7 +93,7 @@ class UserService {
     try {
 
       let { search, startdate, enddate, sortby, sortorder, nextpage, perpage } = userInputs;
-      var lodemore = -1
+      var lodemore = 1
 
       sortorder = sortorder ?? 1;
 
@@ -184,6 +184,38 @@ class UserService {
       console.log({ error: err });
       return ({ error: err });
     }
+  }
+
+  async GetUserRole(is_admin) {
+
+    console.log(is_admin, "is_admin");
+    try {
+
+      const pipeline = [{
+        $match: {
+          is_admin: Number(is_admin),
+        },
+      }];
+      const find = await this.repository.GetPipelineData(pipeline);
+
+      if (find) {        
+        var successmsg = await utils.ResponseMessage("datafound");
+        var errormsg = await utils.ResponseMessage("nodatafound");
+        var apires = await utils.FormateData(find, successmsg, errormsg);
+        return apires;
+      }
+      else {
+        this.resdata.message = await utils.ResponseMessage("nodatafound");
+        this.resdata.statuscode = 409;
+        this.resdata.data = [];
+      }
+      return this.resdata;
+
+    } catch (err) {
+      console.log({ error: err });
+      return ({ error: err });
+    }
+
   }
 
   async UserDelete(id) {

@@ -71,8 +71,16 @@ const List = [
 
 ];
 
+const UserRole = [
+  body("is_admin")
+    .notEmpty()
+    .withMessage("Please Provide User Role"),
+
+];
+
 module.exports = {
   CreateUserValidator,
   UpdateUserValidator,
-  List
+  List,
+  UserRole,
 };
